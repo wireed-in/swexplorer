@@ -1,0 +1,107 @@
+@using swexplorer.client.Components.Layout
+@layout SWLayout
+@page "/"
+
+<PageTitle>Star Wars Explorer</PageTitle>
+
+<!-- Hero Section -->
+<section class="hero">
+    <h1>Explore the Galaxy</h1>
+    <p>Browse and discover iconic starships from the Star Wars universe</p>
+    <a href="/starships" class="cta-button">Browse Starships</a>
+</section>
+
+<div class="fade"></div>
+
+<section class="star-wars">
+    <div class="crawl">
+        <div class="title">
+            <p>Star Wars</p>
+            <h1>Starship Explorer</h1>
+        </div>
+
+        <p>This app lets you explore Star Wars Starships and race them against one another.</p>
+        <p>It is a small fun application that demonstrates the use of Clean Architecture with a BFF
+            (Backend-for-Frontend - not your typical millennial slang) in .NET 9</p>
+    </div>
+</section>
+
+<style>
+    body {
+        width: 100%;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+    }
+
+    .hero {
+        text-align: center;
+        padding: 6rem 2rem;
+        background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+        background-repeat: repeat;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        color: #aaa;
+    }
+
+    .fade {
+        position: relative;
+        width: 100%;
+        min-height: 30vh;
+        top: -25px;
+        background-image: linear-gradient(0deg, transparent, black 75%);
+        z-index: 1;
+    }
+
+    .star-wars {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        height: 800px;
+        color: #feda4a;
+        font-family: 'Pathway Gothic One', sans-serif;
+        font-size: 500%;
+        font-weight: 600;
+        letter-spacing: 6px;
+        line-height: 150%;
+        perspective: 400px;
+        text-align: justify;
+    }
+
+    .crawl {
+        position: relative;
+        top: 99999px;
+        transform-origin: 50% 100%;
+        animation: crawl 60s linear;
+    }
+
+    .crawl>.title {
+        font-size: 90%;
+        text-align: center;
+    }
+
+    .crawl>.title h1 {
+        margin: 0 0 100px;
+        text-transform: uppercase;
+    }
+
+    @@keyframes crawl {
+        0% {
+            top: -100px;
+            transform: rotateX(20deg) translateZ(0);
+        }
+
+        100% {
+            top: -6000px;
+            transform: rotateX(25deg) translateZ(-2500px);
+        }
+    }
+</style>

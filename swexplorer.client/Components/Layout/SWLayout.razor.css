@@ -1,0 +1,6 @@
+.page-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: radial-gradient(ellipse at center, #000 0%, #1a1a1a 100%);
+    color: white;
+    min-height: 100vh;
+}
