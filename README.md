@@ -54,7 +54,20 @@ cd swexplorer
 dotnet restore
 ```
 
-### 3. Run the application
+### 3. Create the database
+
+This app uses **SQLite** with a local file `swexplorer.db` at the project root:
+
+```bash
+cd swexplorer.api
+
+# Apply EF Core migrations
+dotnet ef database update
+```
+
+> Ensure `swexplorer.db` is created in the project root. You can modify connection strings in `appsettings.json`.
+
+### 4. Run the application
 
 ```bash
 dotnet run --project swexplorer.api -lp https
