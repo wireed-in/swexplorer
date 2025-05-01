@@ -1,6 +1,6 @@
 @swexplorer.api_HostAddress = http://localhost:5014
 
-GET {{swexplorer.api_HostAddress}}/weatherforecast/
+GET {{swexplorer.api_HostAddress}}/starships/
 Accept: application/json
 
 ###
