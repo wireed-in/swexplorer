@@ -63,14 +63,16 @@ namespace swexplorer.client.Services
 
         /// <summary>
         /// Gets claims from JWT token.
-        /// TODO: Look into manually parsing JWT if this is a memory issue.
         /// </summary>
         /// <param name="jwt">The JWT token.</param>
         /// <returns>An array of claims.</returns>
         private static IEnumerable<Claim> GetClaimsFromJwt(string jwt)
         {
             var jwtSecurityToken = new JwtSecurityToken(jwt);
-            return jwtSecurityToken.Claims;
+            return jwtSecurityToken.Claims.Select(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+                ? new Claim(ClaimTypes.Name, c.Value)
+                : c
+            );
         }
     }
 }

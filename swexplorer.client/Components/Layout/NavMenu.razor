@@ -1,11 +1,42 @@
-﻿<nav class="nav-bar">
-    <div class="logo">STARFLEET</div>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/starships">Starships</a>
-        <a href="/races">Races</a>
-    </div>
-    <NavLink href="/account/login">
-        <button class="login-button">Login</button>
-    </NavLink>
-</nav>
+﻿@rendermode InteractiveServer
+
+@using swexplorer.client.Services
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject ICustomAuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+@if (RendererInfo.IsInteractive)
+{
+    <nav class="nav-bar">
+        <div class="logo">STARFLEET</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/starships">Starships</a>
+            <a href="/races">Races</a>
+        </div>
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+                <Authorized>
+                    <div class="auth-info">
+                        <span class="user-name">👤 @context.User.Identity?.Name</span>
+                        <button class="logout-button" @onclick="LogoutAsync">Logout</button>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink href="/account/login">
+                        <button class="login-button">Login</button>
+                    </NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+        </CascadingAuthenticationState>
+    </nav>
+}
+
+@code {
+    private async Task LogoutAsync()
+    {
+        await AuthenticationStateProvider.MarkNotAuthenticatedAsync();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}

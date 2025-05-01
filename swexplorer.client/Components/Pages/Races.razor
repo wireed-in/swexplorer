@@ -1,0 +1,30 @@
+@page "/races"
+@rendermode InteractiveServer
+
+@using swexplorer.client.Components.Snippets
+@using swexplorer.client.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
+
+@layout SWLayout
+
+@inject HttpClient Http
+
+<PageTitle>Star Wars Explorer</PageTitle>
+
+@if (RendererInfo.IsInteractive)
+{
+    <div class="body-container">
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+
+                <Authorized>
+                    <h1>Races</h1>
+                </Authorized>
+                <NotAuthorized>
+                    <Restricted />
+                </NotAuthorized>
+
+            </AuthorizeView>
+        </CascadingAuthenticationState>
+    </div>
+}

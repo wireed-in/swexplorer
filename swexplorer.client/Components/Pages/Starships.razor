@@ -1,7 +1,95 @@
-@using swexplorer.client.Components.Layout
-@layout SWLayout
 @page "/starships"
+@rendermode InteractiveServer
+
+@using swexplorer.client.Services
+@using swexplorer.client.Components.Snippets
+@using swexplorer.client.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
+
+@layout SWLayout
+
+@inject HttpClient Http
 
 <PageTitle>Star Wars Explorer</PageTitle>
 
-<h1>List of Starships</h1>
+@if (RendererInfo.IsInteractive)
+{
+    <div class="body-container">
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+
+                <Authorized>
+                    <h1>Starships</h1>
+
+                    @if (starships == null)
+                    {
+                        <p>Loading...</p>
+                    }
+                    else
+                    {
+                        <div class="filter-bar">
+                            <label for="manufacturer">Filter by Manufacturer:</label>
+                            <select id="manufacturer" @bind="selectedManufacturer">
+                                <option value="">All Manufacturers</option>
+                                @foreach (var m in manufacturers)
+                                {
+                                    <option value="@m">@m</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="starship-list">
+                            @foreach (var ship in FilteredStarships)
+                            {
+                                <div class="starship-card">
+                                    <h4>@ship.Name</h4>
+                                    <p><strong>Model:</strong> @ship.Model</p>
+                                    <p><strong>Manufacturer:</strong> @ship.Manufacturer</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <Restricted />
+                </NotAuthorized>
+
+            </AuthorizeView>
+        </CascadingAuthenticationState>
+    </div>
+}
+
+@code {
+    private List<StarshipDto> starships;
+    private string selectedManufacturer = "";
+    private List<string> manufacturers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // On Client render.
+        if (RendererInfo.IsInteractive)
+        {
+            try
+            {
+                starships = await Http.GetFromJsonAsync<List<StarshipDto>>("/api/starships") ?? new();
+
+                manufacturers = starships
+                .Select(s => s.Manufacturer)
+                .Where(m => !string.IsNullOrWhiteSpace(m))
+                .Distinct()
+                .OrderBy(m => m)
+                .ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Failed to load starships: {ex.Message}");
+                starships = new();
+            }
+        }
+    }
+
+    private IEnumerable<StarshipDto> FilteredStarships =>
+    string.IsNullOrWhiteSpace(selectedManufacturer)
+    ? starships
+    : starships.Where(s => s.Manufacturer == selectedManufacturer);
+}
