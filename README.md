@@ -44,7 +44,7 @@ swexplorer/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/swexplorer.git
+git clone https://github.com/wireed-in/swexplorer.git
 cd swexplorer
 ```
 
@@ -80,10 +80,19 @@ Update `appsettings.json` (or use `IConfiguration`) in `swexplorer.api` to confi
 
 ## 📷 Screenshots
 
+### Explore Galaxy
 ![Explore Galaxy](docs/landing.png)
+
+### Restricted Galaxy
 ![Restricted Galaxy](docs/authorization.png)
+
+### Access Point
 ![Access Point](docs/login.png)
+
+### Starships
 ![Starships](docs/starships.png)
+
+### Hyperspace Racing
 ![Hyperspace Race](docs/race.png)
 
 ---
