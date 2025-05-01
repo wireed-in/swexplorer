@@ -80,15 +80,11 @@ Update `appsettings.json` (or use `IConfiguration`) in `swexplorer.api` to confi
 
 ## 📷 Screenshots
 
-_Add your screenshots to the `/docs` folder and reference them here:_
-
-```
 ![Explore Galaxy](docs/landing.png)
 ![Restricted Galaxy](docs/authorization.png)
 ![Access Point](docs/login.png)
 ![Starships](docs/starships.png)
 ![Hyperspace Race](docs/race.png)
-```
 
 ---
 
