@@ -31,6 +31,6 @@ public class SwexplorerDbContext : IdentityDbContext
 
         // This is a work around for how SQLite handles Guids. 
         // TODO: Remove if using SQL Server.
-        modelBuilder.Entity<PlatformEntity>().Property(k => k.Id).HasConversion<string>();
+        modelBuilder.Entity<BaseEntity>().Property(k => k.Id).HasConversion<string>();
     }
 }
