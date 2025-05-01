@@ -27,6 +27,21 @@ namespace swexplorer.client.Services
             // Try to get jwt from session or local storage.
             var jwt = await _tokenService.GetTokenAsync();
 
+            if (string.IsNullOrEmpty(jwt))
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                
+            var token = new JwtSecurityToken(jwt);
+
+            // Check expiration
+            var now = DateTime.UtcNow;
+            if (token.ValidTo < now)
+            {
+                await _tokenService.RemoveTokenAsync();
+                _httpClient.DefaultRequestHeaders.Authorization = null;
+
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
+
             // Create identity with jwt or anonymous identity.
             var identity = string.IsNullOrEmpty(jwt)
                 ? new ClaimsIdentity()

@@ -21,6 +21,26 @@
                 <Authorized>
                     <h1>Starships</h1>
 
+                    @if (winner != null)
+                    {
+                        <div class="winner-banner">
+                            🏆 Winner: <strong>@winner.Name</strong> with a score of @winnerScore.ToString("F2")
+                        </div>
+                    }
+
+                    @if (starships?.Any(s => s.IsSelected) == true)
+                    {
+                        <button class="race-button" @onclick="FindWinner"
+                            disabled="@(starships?.Any(s => s.IsSelected) != true)">
+                            Run Hyperspace Race
+                        </button>
+
+                        <button class="race-button" @onclick="ClearSelection"
+                            disabled="@(starships?.Any(s => s.IsSelected) != true && winner == null)">
+                            Clear Results
+                        </button>
+                    }
+
                     @if (starships == null)
                     {
                         <p>Loading...</p>
@@ -41,10 +61,14 @@
                         <div class="starship-list">
                             @foreach (var ship in FilteredStarships)
                             {
-                                <div class="starship-card">
+                                <div class="starship-card @(ship.IsSelected ? "selected" : "")"
+                                    @onclick="() => ToggleSelection(ship)">
                                     <h4>@ship.Name</h4>
                                     <p><strong>Model:</strong> @ship.Model</p>
                                     <p><strong>Manufacturer:</strong> @ship.Manufacturer</p>
+                                    <p><strong>Hyperdrive Rating:</strong> @ship.HyperdriveRating</p>
+                                    <p><strong>Max Atmos Speed:</strong> @ship.MaxAtmospheringSpeed</p>
+                                    <p><strong>MGLT:</strong> @ship.MGLT</p>
                                 </div>
                             }
                         </div>
@@ -60,13 +84,14 @@
 }
 
 @code {
-    private List<StarshipDto> starships;
+    private List<StarshipDto>? starships;
     private string selectedManufacturer = "";
     private List<string> manufacturers = new();
+    private StarshipDto? winner;
+    private double winnerScore = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        // On Client render.
         if (RendererInfo.IsInteractive)
         {
             try
@@ -89,7 +114,70 @@
     }
 
     private IEnumerable<StarshipDto> FilteredStarships =>
-    string.IsNullOrWhiteSpace(selectedManufacturer)
-    ? starships
-    : starships.Where(s => s.Manufacturer == selectedManufacturer);
+        string.IsNullOrWhiteSpace(selectedManufacturer)
+            ? starships ?? Enumerable.Empty<StarshipDto>()
+            : (starships ?? Enumerable.Empty<StarshipDto>())
+                .Where(s => s.Manufacturer == selectedManufacturer);
+
+    private void FindWinner()
+    {
+        winner = null;
+        winnerScore = 0;
+
+        foreach (var ship in starships?.Where(s => s.IsSelected) ?? Enumerable.Empty<StarshipDto>())
+        {
+            if (TryParseMetrics(ship, out double atmo, out double mglt, out double hyper))
+            {
+                var score = CalculateSpeedScore(atmo, mglt, hyper);
+                if (score > winnerScore)
+                {
+                    winner = ship;
+                    winnerScore = score;
+                }
+            }
+        }
+    }
+
+    private bool TryParseMetrics(StarshipDto ship, out double atmo, out double mglt, out double hyper)
+    {
+        atmo = mglt = hyper = 0;
+
+        var success =
+        double.TryParse(ship.MaxAtmospheringSpeed, out atmo) &&
+        double.TryParse(ship.MGLT, out mglt) &&
+        double.TryParse(ship.HyperdriveRating, out hyper) &&
+        hyper > 0;
+
+        if (!success)
+        {
+            atmo = mglt = hyper = 0;
+        }
+
+        return success;
+    }
+
+    private double CalculateSpeedScore(double atmoSpeed, double mglt, double hyperdriveRating)
+    {
+        double normAtmo = atmoSpeed / 1000.0;
+        double normMglt = mglt / 100.0;
+        double normHyper = 1.0 / hyperdriveRating;
+
+        return (normHyper * 0.4) + (normMglt * 0.4) + (normAtmo * 0.2);
+    }
+
+    private void ToggleSelection(StarshipDto ship)
+    {
+        ship.IsSelected = !ship.IsSelected;
+    }
+
+    private void ClearSelection()
+    {
+        foreach (var ship in starships ?? Enumerable.Empty<StarshipDto>())
+        {
+            ship.IsSelected = false;
+        }
+
+        winner = null;
+        winnerScore = 0;
+    }
 }

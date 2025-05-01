@@ -85,7 +85,7 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Email, user.Email ?? "")
         };
 
-        var expiresAt = DateTime.UtcNow.AddMinutes(10);
+        var expiresAt = DateTime.UtcNow.AddMinutes(15);
 
         return new AuthTokenDto
         {
