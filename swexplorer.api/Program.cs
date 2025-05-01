@@ -17,6 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IStarshipService, StarshipService>();
 
 // Register Blazor Client
 builder.Services.AddHttpClient("SWExplorerClient", client =>

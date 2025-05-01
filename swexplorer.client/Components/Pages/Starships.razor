@@ -1,6 +1,7 @@
 @page "/starships"
 @rendermode InteractiveServer
 
+@using swexplorer.application.Models
 @using swexplorer.client.Services
 @using swexplorer.client.Components.Snippets
 @using swexplorer.client.Components.Layout
@@ -96,7 +97,8 @@
         {
             try
             {
-                starships = await Http.GetFromJsonAsync<List<StarshipDto>>("/api/starships") ?? new();
+                var result = await Http.GetFromJsonAsync<ApiResponse<IEnumerable<StarshipDto>>>("/api/starships") ?? new();
+                starships = result?.Data?.ToList();
 
                 manufacturers = starships
                 .Select(s => s.Manufacturer)

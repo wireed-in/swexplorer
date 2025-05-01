@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using swexplorer.application.Interfaces;
 
 namespace swexplorer.api.Controllers;
 
@@ -6,27 +7,21 @@ namespace swexplorer.api.Controllers;
 [Route("api/[controller]")]
 public class StarshipsController : ControllerBase
 {
-    private readonly HttpClient _http;
-    private readonly IConfiguration _configuration;
+    private readonly IStarshipService _starshipService;
 
-    public StarshipsController(HttpClient http, IConfiguration configuration)
+    public StarshipsController(IStarshipService starshipService)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration), $"{nameof(configuration)} cannot be null.");
-        _http = http ?? throw new ArgumentNullException(nameof(http), $"{nameof(http)} cannot be null.");
+        _starshipService = starshipService ?? throw new ArgumentNullException(nameof(starshipService), $"{nameof(starshipService)} cannot be null.");
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        // Get jwt settings from configuration.
-        var swapiSettings = _configuration.GetSection("Swapi");
-        var swapiEndpoint = swapiSettings["BaseUrl"];
+        var result = await _starshipService.GetStarships();
 
-        var response = await _http.GetAsync($"{swapiEndpoint}/starships");
-        if (!response.IsSuccessStatusCode)
-            return StatusCode((int)response.StatusCode, "Error fetching starships");
-
-        var json = await response.Content.ReadAsStringAsync();
-        return Content(json, "application/json");
+        if (!result.Success)
+            return NotFound(result);
+        
+        return Ok(result);
     }
 }
