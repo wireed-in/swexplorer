@@ -74,3 +74,67 @@ h1:focus {
     background-color: #FFE81F;
     color: #000;
 }
+
+/* BEGIN Auth pages */
+.auth-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    background-color: #111;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(255, 232, 31, 0.1);
+    text-align: center;
+}
+
+.auth-container h2 {
+    color: #FFE81F;
+    margin-bottom: 0.5rem;
+}
+
+.auth-container p {
+    color: #ccc;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ddd;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+}
+
+.auth-button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #FFE81F;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    width: 100%;
+}
+
+.auth-switch {
+    margin-top: 1.5rem;
+    color: #aaa;
+}
+
+.auth-switch a {
+    color: #FFE81F;
+    text-decoration: none;
+}
+/* END Auth pages */

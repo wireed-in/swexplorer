@@ -1,0 +1,92 @@
+@page "/account/login"
+@rendermode InteractiveServer
+
+@using swexplorer.client.Components.Layout
+@using System.ComponentModel.DataAnnotations
+@using swexplorer.application.Models.Account
+@using swexplorer.application.Models
+@using swexplorer.application.Dtos
+@using swexplorer.client.Services
+
+@layout SWLayout
+
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@inject ICustomAuthenticationStateProvider AuthenticationStateProvider
+
+<div class="auth-container">
+    <h2>Login</h2>
+    <p>Welcome back, traveler of the stars.</p>
+
+    @if (!string.IsNullOrEmpty(result))
+    {
+        <div class="alert @alertClass">
+            @result
+        </div>
+    }
+
+    <EditForm Model="@loginModel" OnValidSubmit="HandleLoginAsync" FormName="loginForm">
+        <DataAnnotationsValidator />
+
+        <div class="form-group">
+            <label for="email" class="form-label">Email address</label>
+            <InputText id="email" class="form-control" @bind-Value="loginModel.Email" />
+            <ValidationMessage class="text-danger" For="@(() => loginModel.Email)" />
+        </div>
+
+        <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
+            <ValidationMessage class="text-danger" For="@(() => loginModel.Password)" />
+        </div>
+
+        <button type="submit" class="auth-button">Login</button>
+    </EditForm>
+
+    <p class="auth-switch">Don't have an account? <a href="/account/register">Register here</a></p>
+</div>
+
+@code {
+    // Login Model
+    private LoginModel loginModel = new LoginModel();
+
+    // API result properties.
+    private string result = string.Empty;
+    private string alertClass = string.Empty;
+
+    // Handle form submission
+    private async Task HandleLoginAsync()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync<LoginModel>("/api/auth/login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadFromJsonAsync<ApiResponse<AuthTokenDto>>();
+
+                if (responseContent != null && responseContent.Data != null)
+                {
+                    await AuthenticationStateProvider.MarkAuthenticatedAsync(responseContent.Data.Token, rememberMe: false);
+                    Navigation.NavigateTo($"/starships", true);
+                }
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
+
+                if (errorContent != null && errorContent.Errors.Count() > 0)
+                {
+                    result = errorContent.Errors.FirstOrDefault() ?? string.Empty;
+                    alertClass = "alert-danger";
+                }
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            alertClass = "alert-danger";
+            result = $"An unexpected error occured: {e.Message}";
+            Console.WriteLine(e.Message);
+        }
+    }
+}

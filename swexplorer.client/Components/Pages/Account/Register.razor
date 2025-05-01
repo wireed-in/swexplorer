@@ -1,0 +1,105 @@
+@page "/account/register"
+@rendermode InteractiveServer
+
+@using swexplorer.client.Components.Layout
+@using System.ComponentModel.DataAnnotations
+@using swexplorer.application.Models.Account
+@using swexplorer.application.Models
+
+@layout SWLayout
+
+@inject HttpClient Http
+
+<div class="auth-container">
+    <h2>Register</h2>
+    <p>Create your galactic identity.</p>
+
+    @if (!string.IsNullOrEmpty(result))
+    {
+        <div class="alert @alertClass">
+            @result
+        </div>
+    }
+
+    <EditForm Model="@registerModel" OnValidSubmit="HandleRegistration" FormName="registerForm" @key="registerModel">
+        <DataAnnotationsValidator />
+
+        <div class="form-group">
+            <label>First Name</label>
+            <InputText class="form-control" @bind-Value="registerModel.FirstName" />
+            <ValidationMessage class="text-danger" For="@(() => registerModel.FirstName)" />
+        </div>
+
+        <div class="form-group">
+            <label>Last Name</label>
+            <InputText class="form-control" @bind-Value="registerModel.LastName" />
+            <ValidationMessage class="text-danger" For="@(() => registerModel.LastName)" />
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <InputText class="form-control" @bind-Value="registerModel.Email" />
+            <ValidationMessage class="text-danger" For="@(() => registerModel.Email)" />
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <InputText class="form-control" @bind-Value="registerModel.Password" type="password" />
+            <ValidationMessage class="text-danger" For="@(() => registerModel.Password)" />
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <InputText class="form-control" @bind-Value="registerModel.ConfirmPassword" type="password" />
+            <ValidationMessage class="text-danger" For="@(() => registerModel.ConfirmPassword)" />
+        </div>
+
+        <button type="submit" class="auth-button">Register</button>
+    </EditForm>
+
+    <p class="auth-switch">Already have an account? <a href="/login">Login here</a></p>
+</div>
+
+@code {
+    // Register Model
+    private RegisterModel registerModel = new RegisterModel();
+
+    // API result properties.
+    private string result = string.Empty;
+    private string alertClass = string.Empty;
+
+    // Handle form submission.
+    private async Task HandleRegistration()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync<RegisterModel>("/api/auth/register", registerModel);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadFromJsonAsync<ApiResponse<string>>();
+
+                if (errorContent != null && errorContent.Errors.Count() > 0)
+                {
+                    result = errorContent.Errors.FirstOrDefault() ?? string.Empty;
+                    alertClass = "alert-danger";
+                }
+            }
+            else
+            {
+                var successContent = await response.Content.ReadFromJsonAsync<ApiResponse<string>>();
+                // Not checking successContent != null && successContent.Data != null here for simplicity.
+                // Ideally this should be checked and the user should be redirected to email confirmation page.
+
+                result = "Registration completed successfully.";
+                alertClass = "alert-success";
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            alertClass = "alert-danger";
+            result = $"An unexpected error occured: {e.Message}";
+            Console.WriteLine(e.Message);
+        }
+    }
+}
