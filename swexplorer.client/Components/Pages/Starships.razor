@@ -1,6 +1,9 @@
 @page "/starships"
 @rendermode InteractiveServer
 
+@using System;
+@using System.Linq;
+@using System.Collections.Generic;
 @using swexplorer.application.Models
 @using swexplorer.client.Services
 @using swexplorer.client.Components.Snippets
@@ -101,8 +104,15 @@
                 starships = result?.Data?.ToList();
 
                 manufacturers = starships
-                    .Select(s => s.Manufacturer)
-                    .Where(m => !string.IsNullOrWhiteSpace(m))
+                    .Where(s => !string.IsNullOrWhiteSpace(s.Manufacturer))
+                    .SelectMany(s => s.Manufacturer
+                        .Split('/', StringSplitOptions.RemoveEmptyEntries)
+                            .SelectMany(part => part
+                                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(p => p.Trim())))
+                    .Where(m => !m.EndsWith("Inc.", StringComparison.OrdinalIgnoreCase) &&
+                        !m.EndsWith("Inc", StringComparison.OrdinalIgnoreCase) &&
+                        !m.EndsWith("Incorporated", StringComparison.OrdinalIgnoreCase))
                     .Distinct()
                     .OrderBy(m => m)
                     .ToList();
@@ -119,7 +129,7 @@
         string.IsNullOrWhiteSpace(selectedManufacturer)
             ? starships ?? Enumerable.Empty<StarshipDto>()
             : (starships ?? Enumerable.Empty<StarshipDto>())
-                .Where(s => s.Manufacturer == selectedManufacturer);
+        .Where(s => s.Manufacturer.Contains(selectedManufacturer));
 
     private void FindWinner()
     {
