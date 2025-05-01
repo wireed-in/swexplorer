@@ -105,12 +105,14 @@ h1:focus {
 /* BEGIN Auth pages */
 .auth-container {
     max-width: 400px;
-    margin: 5rem auto;
+    margin: 3rem auto;
     background-color: #111;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(255, 232, 31, 0.1);
     text-align: center;
+    padding-bottom: 2rem; /* or less */
+    margin-bottom: 0;
 }
 
 .auth-container h2 {

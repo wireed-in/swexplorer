@@ -101,11 +101,11 @@
                 starships = result?.Data?.ToList();
 
                 manufacturers = starships
-                .Select(s => s.Manufacturer)
-                .Where(m => !string.IsNullOrWhiteSpace(m))
-                .Distinct()
-                .OrderBy(m => m)
-                .ToList();
+                    .Select(s => s.Manufacturer)
+                    .Where(m => !string.IsNullOrWhiteSpace(m))
+                    .Distinct()
+                    .OrderBy(m => m)
+                    .ToList();
             }
             catch (Exception ex)
             {
@@ -181,5 +181,6 @@
 
         winner = null;
         winnerScore = 0;
+        selectedManufacturer = "";
     }
 }
